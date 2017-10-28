@@ -157,15 +157,15 @@ class PlaceFamilyReport(Report):
             self.doc.start_paragraph("PLC-ReportSubtitle")
             self.doc.write_text(subtitle, mark)
             self.doc.end_paragraph()
-    
+   
             self.doc.start_paragraph("PLC-Section")
             self.doc.write_text("Enthält alle Familien mit Hochzeitsereignis in diesem Ort")
             self.doc.end_paragraph()
-    
+   
             for handle in self.place_handles:
                 if handle:
                     self.doc.start_paragraph("PLC-Section")
-                    
+                   
                     indexplace = self.database.get_place_from_handle(handle).get_title()+" L_INDEX"
                     mark = IndexMark( indexplace, INDEX_TYPE_ALP)
                     self.doc.write_text(indexplace,mark)
@@ -176,25 +176,24 @@ class PlaceFamilyReport(Report):
                 step()
 
             subtitle = self._("Families")
-            mark = IndexMark(subtitle, INDEX_TYPE_TOC, 2)        
+            mark = IndexMark(subtitle, INDEX_TYPE_TOC, 2)
             self.doc.start_paragraph("PLC-ReportSubtitle")
             self.doc.write_text(subtitle, mark)
             self.doc.end_paragraph()
-
-           
+    
     def __format_date(self, date_object):
         if not date_object: return
-        d=date_object.get_day()    
-        m=date_object.get_month()
-        y=date_object.get_year()
+        d = date_object.get_day()
+        m = date_object.get_month()
+        y = date_object.get_year()
         if (d == 0) and (m == 0):
             date_f = (" %s" % y)
         elif (d == 0) and not (m == 0):
-            date_f = (" %s.%s" % (m, y))  
-        else:       
-            date_f = (" %s.%s.%s" % (d, m, y)) 
-        return date_f           
-        
+            date_f = (" %s.%s" % (m, y))
+        else:
+            date_f = (" %s.%s.%s" % (d, m, y))
+        return date_f
+
 
 #    def __format_place(self, place_string, pl_format):
 #        if (len(place_string) <=0): return place_string
@@ -221,29 +220,28 @@ class PlaceFamilyReport(Report):
         i = 0
         iw = 0
         ifam = 0
-        marrevt_handle_list =[]
-        marr =[]
-        fam_list=[]
-        fam_index={}
-        Paten_list =[]
+        marrevt_handle_list = []
+        marr = []
+        fam_list = []
+        fam_index ={}
+        Paten_list = []
 
         if self.showgodparents:
-            pedic ={}
+            pedic = {}
             pedic = defaultdict(list)
             for pe in self.database.get_person_handles():
                 for eventref in self.database.get_person_from_handle(pe).event_ref_list:
                     if not eventref.get_role().is_primary():
                         pedic[eventref.ref].append((eventref.get_role(),pe))
 
-        with self._user.progress(_("PlaceFamily Report"), 
-                                  _("Generating report"), 
-                                  len(self.place_handles)) as step:
-                                  
+        with self._user.progress(_("PlaceFamily Report"),
+                                  ("Generating report"),
+                                  len(self.place_handles)) as step:                               
 
 
-            for handle in self.place_handles:        
+            for handle in self.place_handles:      
     # first all events
-                  
+                
                 event_handles = [event_handle for (object_type, event_handle) in
                                  self.database.find_backlink_handles(handle, ['Event'])]
                 event_handles.sort(key=self.sort.by_date_key)
@@ -284,13 +282,12 @@ class PlaceFamilyReport(Report):
                         print(place_d)
                         event_details = [ father_handle, father_name, date, ref_handle, descr, place_d, family, date_sort]
                         fam_list.append(event_details)
-    
-                                                     
+
     #        print(sorted(fam_list, key=itemgetter(1,7)))
     #        print(len(fam_list))
             printsurname = "NOW"
             index=0
-##########################            
+##########################
             #for fn in sorted(fam_list, key=itemgetter(1,7)):
 
             #fam_list_name
@@ -299,7 +296,7 @@ class PlaceFamilyReport(Report):
 #            print(sorted(lastnames, key=locale.strxfrm))
 #            print()
 #
-#            lastnames_firstnames_groups =[
+#            lastnames_firstnames_groups = [
 #                ["Bange", "Michael", 2],
 #                ["Änger", "Ämma", 2],
 #                ["Amman", "Anton", 1],
@@ -314,7 +311,7 @@ class PlaceFamilyReport(Report):
 #                    key=lambda t: (t[2], locale.strxfrm(t[0]), locale.strxfrm(t[1]))
 #                )
 #            )
-#**************************            
+#**************************        
             for fn in sorted(fam_list,  key=lambda t: (locale.strxfrm(t[1]), t[7])):
                 index +=1
                 fam_index[fn[6].get_gramps_id()]=index
@@ -322,8 +319,7 @@ class PlaceFamilyReport(Report):
     #        for ifn in fam_index.keys():
     #            print(ifn, fam_index[ifn])
             fam_index_keys = fam_index.keys()
-    
-    
+
             for fn in sorted(fam_list,  key=lambda t: (locale.strxfrm(t[1]), t[7])):
                 if fn[0] is None:
                     surname = _("unknown")
@@ -637,12 +633,8 @@ class PlaceFamilyReport(Report):
                                     mark = ReportUtils.get_person_mark(self.database, pate)
                                     self.doc.write_text(pate.get_primary_name().get_first_name() +" "+ pate.get_primary_name().get_surname() ,mark)
                                 self.doc.end_paragraph()
-                                Patenlist =[]
-
-        #        print(ifam, "family")    
-
-
-        
+                                Patenlist = []
+  
     def __get_place_handles(self, places):
         """
         This procedure converts a string of place GIDs to a list of handles
@@ -654,7 +646,7 @@ class PlaceFamilyReport(Report):
                 place_handles.append(place.get_handle())
 
         return place_handles
-    
+  
 #------------------------------------------------------------------------
 #
 # PlaceFamilyReportOptions
@@ -668,7 +660,7 @@ class PlaceFamilyReportOptions(MenuReportOptions):
 
     def __init__(self, name, dbase):
         MenuReportOptions.__init__(self, name, dbase)
-        
+
     def add_menu_options(self, menu):
         """
         Add options to the menu for the place report.
@@ -739,10 +731,10 @@ class PlaceFamilyReportOptions(MenuReportOptions):
         para.set_header_level(1)
         para.set_top_margin(0.25)
         para.set_bottom_margin(0.25)
-        para.set_alignment(PARA_ALIGN_CENTER)       
+        para.set_alignment(PARA_ALIGN_CENTER)  
         para.set_description(_('The style used for the title of the report.'))
         self.default_style.add_paragraph_style("PLC-ReportTitle", para)
-        
+
     def __report_subtitle_style(self):
         """
         Define the style used for the report title
@@ -755,7 +747,7 @@ class PlaceFamilyReportOptions(MenuReportOptions):
         para.set_header_level(1)
         para.set_top_margin(0.25)
         para.set_bottom_margin(0.25)
-        #para.set_alignment(PARA_ALIGN_LEFT)       
+        #para.set_alignment(PARA_ALIGN_LEFT)    
         para.set_description(_('The style used for the title of the report.'))
         self.default_style.add_paragraph_style("PLC-ReportSubtitle", para)        
 
@@ -797,7 +789,7 @@ class PlaceFamilyReportOptions(MenuReportOptions):
         para.set(first_indent=-2.0, lmargin=4.5)
         para.set_description(_('The style used for place details.'))
         self.default_style.add_paragraph_style("PLC-PlaceDetailsChildren", para)
-        
+   
     def __place_details_godparents_style(self):
         """
         Define the style used for the place details
